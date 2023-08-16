@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -16,7 +18,7 @@ func main() {
 
 	var convCmd = &cobra.Command{
 		Use:   "conv",
-		Short: "Convert file format",
+		Short: "Enter the directory of the file to change the extension",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 		},
@@ -24,7 +26,7 @@ func main() {
 
 	var outCmd = &cobra.Command{
 		Use:   "outDir",
-		Short: "The directory of the converted file",
+		Short: "Enter the directory to save the formatted file",
 		Run: func(cmd *cobra.Command, args []string) {
 
 		},
@@ -32,13 +34,8 @@ func main() {
 
 	var formatCmd = &cobra.Command{
 		Use:   "Format",
-		Short: "Format of the new file",
+		Short: "Enter the extension to which the given file will be converted",
 		Run: func(cmd *cobra.Command, args []string) {
-			formatType, _ := cmd.Flags().GetString("format")
-			if formatType == "" {
-				fmt.Println("Please provide a format using the -f flag")
-				return
-			}
 		},
 	}
 
@@ -92,4 +89,41 @@ func getFileName(cmd *cobra.Command, args []string) string {
 		}
 	}
 	return ""
+}
+
+func readContent(cmd *cobra.Command, args []string) (string, error) {
+	filePath, _ := cmd.Flags().GetString("file")
+
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	return string(content), nil
+}
+
+func saveContentToDirectory(cmd *cobra.Command, content string, newName string) error {
+	outDir, _ := cmd.Flags().GetString("dir")
+
+	if strings.HasSuffix(outDir, "/") {
+		newFilePath := filepath.Join(outDir, newName)
+
+		// Create or open the file for writing
+		file, err := os.Create(newFilePath)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write the content to the file
+		_, err = file.WriteString(content)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("File saved at:", newFilePath)
+		return nil
+	}
+
+	return fmt.Errorf("Invalid directory")
 }
