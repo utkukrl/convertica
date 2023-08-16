@@ -20,7 +20,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			fileDir, _ := cmd.Flags().GetString("file")
 			if fileDir == "" {
-				fmt.Println("Please provide a file directory using the --file flag")
+				fmt.Println("Please provide a file directory using the -c flag")
 				return
 
 			}
@@ -31,7 +31,11 @@ func main() {
 		Use:   "outDir",
 		Short: "The directory of the converted file",
 		Run: func(cmd *cobra.Command, args []string) {
-			//çıkış dizinini aldığın fonksiyonu ekle
+			outputDir, _ := cmd.Flags().GetString("dir")
+			if outputDir == "" {
+				fmt.Println("Please provide a output directory using the -o flag")
+				return
+			}
 		},
 	}
 
@@ -39,7 +43,11 @@ func main() {
 		Use:   "Format",
 		Short: "Format of the new file",
 		Run: func(cmd *cobra.Command, args []string) {
-			//dosya formatını aldığın func
+			formatType, _ := cmd.Flags().GetString("format")
+			if formatType == "" {
+				fmt.Println("Please provide a format using the -o flag")
+				return
+			}
 		},
 	}
 
