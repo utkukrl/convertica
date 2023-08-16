@@ -18,12 +18,6 @@ func main() {
 		Short: "Convert file format",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			fileDir, _ := cmd.Flags().GetString("file")
-			if fileDir == "" {
-				fmt.Println("Please provide a file directory using the -c flag")
-				return
-
-			}
 		},
 	}
 
@@ -45,7 +39,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			formatType, _ := cmd.Flags().GetString("format")
 			if formatType == "" {
-				fmt.Println("Please provide a format using the -o flag")
+				fmt.Println("Please provide a format using the -f flag")
 				return
 			}
 		},
@@ -64,4 +58,24 @@ func main() {
 		os.Exit(1)
 	}
 
+}
+
+func converter(cmd *cobra.Command, args []string) {
+
+	fileDir, _ := cmd.Flags().GetString("file")
+
+	if isValidDirectory(fileDir) == true {
+
+	}
+
+}
+
+func isValidDirectory(fileDir string) bool {
+
+	fileInfo, err := os.Stat(fileDir)
+	if err != nil {
+		return false
+	}
+
+	return fileInfo.IsDir()
 }
