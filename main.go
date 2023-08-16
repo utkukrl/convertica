@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -25,11 +26,7 @@ func main() {
 		Use:   "outDir",
 		Short: "The directory of the converted file",
 		Run: func(cmd *cobra.Command, args []string) {
-			outputDir, _ := cmd.Flags().GetString("dir")
-			if outputDir == "" {
-				fmt.Println("Please provide a output directory using the -o flag")
-				return
-			}
+
 		},
 	}
 
@@ -60,14 +57,12 @@ func main() {
 
 }
 
-func converter(cmd *cobra.Command, args []string) {
+func converter(cmd *cobra.Command, args []string) string {
+	lastFileName := getFileName(cmd, args)
+	fileFormat, _ := cmd.Flags().GetString("format")
 
-	fileDir, _ := cmd.Flags().GetString("file")
-
-	if isValidDirectory(fileDir) == true {
-
-	}
-
+	newName := lastFileName + fileFormat
+	return newName
 }
 
 func isValidDirectory(fileDir string) bool {
@@ -78,4 +73,23 @@ func isValidDirectory(fileDir string) bool {
 	}
 
 	return fileInfo.IsDir()
+}
+
+func getFileName(cmd *cobra.Command, args []string) string {
+
+	fileName, _ := cmd.Flags().GetString("file")
+
+	if isValidDirectory(fileName) == true {
+
+		parts := strings.Split(fileName, ".")
+		if len(parts) > 1 {
+			baseName := strings.Join(parts[:len(parts)-1], ".")
+			lastSlashIndex := strings.LastIndex(baseName, "/")
+			if lastSlashIndex != -1 {
+				return baseName[lastSlashIndex+1:]
+			}
+			return baseName
+		}
+	}
+	return ""
 }
