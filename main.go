@@ -21,6 +21,7 @@ func main() {
 		Short: "Enter the directory of the file to change the extension",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
+			getFileName(cmd, args)
 		},
 	}
 
@@ -28,7 +29,11 @@ func main() {
 		Use:   "outDir",
 		Short: "Enter the directory to save the formatted file",
 		Run: func(cmd *cobra.Command, args []string) {
-
+			err := saveContentToDirectory(cmd, "a", "b")
+			if err != nil {
+				fmt.Println("Error saving file:", err)
+				return
+			}
 		},
 	}
 
@@ -36,6 +41,7 @@ func main() {
 		Use:   "Format",
 		Short: "Enter the extension to which the given file will be converted",
 		Run: func(cmd *cobra.Command, args []string) {
+			converter(cmd, args)
 		},
 	}
 
@@ -74,7 +80,7 @@ func isValidDirectory(fileDir string) bool {
 }
 
 func getFileName(cmd *cobra.Command, args []string) string {
-
+	//Gelen dosyanın dizini geçerli ise sondaki uzantıyı ve baştaki dizini temizler
 	fileName, _ := cmd.Flags().GetString("file")
 
 	if isValidDirectory(fileName) == true {
@@ -93,6 +99,7 @@ func getFileName(cmd *cobra.Command, args []string) string {
 }
 
 func readContent(cmd *cobra.Command, args []string) (string, error) {
+	//dosya içeriğini okur
 	filePath, _ := cmd.Flags().GetString("file")
 
 	content, err := ioutil.ReadFile(filePath)
@@ -109,14 +116,12 @@ func saveContentToDirectory(cmd *cobra.Command, content string, newName string) 
 	if strings.HasSuffix(outDir, "/") {
 		newFilePath := filepath.Join(outDir, newName)
 
-		// Create or open the file for writing
 		file, err := os.Create(newFilePath)
 		if err != nil {
 			return err
 		}
 		defer file.Close()
 
-		// Write the content to the file
 		_, err = file.WriteString(content)
 		if err != nil {
 			return err
