@@ -55,6 +55,7 @@ func main() {
 }
 
 func converter(cmd *cobra.Command, args []string) string {
+	//Girilen uzantı ve önceki uzantısından temizlenmiş dosya adı oluşturur
 	lastFileName := getFileName(cmd, args)
 	fileFormat, _ := cmd.Flags().GetString("format")
 
@@ -63,7 +64,7 @@ func converter(cmd *cobra.Command, args []string) string {
 }
 
 func isValidDirectory(fileDir string) bool {
-
+	//Gelen dizinin geçerli olup olmadığını kontrol eder
 	fileInfo, err := os.Stat(fileDir)
 	if err != nil {
 		return false
