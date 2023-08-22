@@ -11,44 +11,25 @@ import (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	var file, dir, format *string
+	rootCmd := &cobra.Command{
 		Use:   "Convertica",
 		Short: "Convertica is a file format converter",
 	}
 
-	var convCmd = &cobra.Command{
+	convCmd := &cobra.Command{
 		Use:   "conv",
 		Short: "Convert file format",
 		Run: func(cmd *cobra.Command, args []string) {
-			converter(cmd, args)
+			fmt.Printf("flags:\n\t%v\n\t%v\n\t%v\n", *file, *dir, *format)
 		},
 	}
 
-	var outCmd = &cobra.Command{
-		Use:   "outDir",
-		Short: "The directory of the converted file",
-		Run: func(cmd *cobra.Command, args []string) {
-			content, _ := readContent(cmd, args)
-			newName := converter(cmd, args)
-			saveContentToDirectory(cmd, content, newName)
-		},
-	}
-
-	var formatCmd = &cobra.Command{
-		Use:   "format",
-		Short: "Format of the new file",
-		Run: func(cmd *cobra.Command, args []string) {
-			converter(cmd, args)
-		},
-	}
-
-	convCmd.Flags().StringP("file", "c", "", "The directory of the file to be compressed")
-	outCmd.Flags().StringP("dir", "o", "", "The directory of the converted file")
-	formatCmd.Flags().StringP("format", "f", "", "Format of the new file")
+	file = convCmd.Flags().StringP("file", "c", "", "The directory of the file to be compressed")
+	dir = convCmd.Flags().StringP("dir", "o", "", "The directory of the converted file")
+	format = convCmd.Flags().StringP("format", "f", "", "Format of the new file")
 
 	rootCmd.AddCommand(convCmd)
-	rootCmd.AddCommand(outCmd)
-	rootCmd.AddCommand(formatCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
